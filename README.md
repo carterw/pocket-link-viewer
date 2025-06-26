@@ -1,12 +1,13 @@
 # Pocket Link Viewer
 
-Pocket Link Viewer is a simple web app for browsing, viewing, and managing a list of links (such as exported from Pocket or other sources) stored in a CSV file. You can view, sort, and delete links through a modern, interactive web interface.
+The Mozilla Pocket app is no longer available, but you can still export your links to a CSV file on your local computer. Pocket Link Viewer is a simple web app that allows you to view these links. They can be displayed in ascending or descending order by date added. Clicking on a link will highlight it in the list and open it in a new tab. When you delete a link, it will be removed from the list and the CSV file.
+
+This app uses Node.js and Express to serve the web page and csv-parse to parse the CSV file, so you will need to have Node.js installed to run it. When the server is running on your local machine, you can access the webpage at `http://localhost:3008`.
 
 ## Features
-- View links from a CSV file in a sortable, searchable table
+- View links from the CSV file in a sortable table
 - Sort links by date (ascending/descending)
 - Delete links from the list (removes from CSV)
-- View detailed information for each link
 - Mobile-friendly, clean UI
 
 ## Installation
@@ -58,4 +59,4 @@ Pocket Link Viewer is a simple web app for browsing, viewing, and managing a lis
 - For large CSV files, performance may vary.
 
 ## License
-MIT (or specify your preferred license)
+MIT
