@@ -14,23 +14,17 @@ This app uses Node.js and Express to serve the web page and csv-parse to parse t
 
 1. **Clone this repository** (or copy the files to your local machine):
    ```bash
-   git clone <your-repo-url>
    cd pocket-link-viewer
    ```
 2. **Install dependencies** (requires [Node.js](https://nodejs.org/) 16+):
    ```bash
-   npm install express csv-parse
-   ```
-   (If you don't have a `package.json`, you can run:)
-   ```bash
-   npm init -y
-   npm install express csv-parse
+   npm install
    ```
 
 ## Usage
 
 1. **Prepare your CSV file**
-   - The default expected CSV file is `part_000000.csv` in the project directory.
+   - The default expected CSV file is `part_000000.csv` in the project directory. This is the file that is created when you export your links from Pocket.
    - You can specify a different CSV file when starting the server (see below).
    - The CSV should have columns: `title`, `url`, `time_added`, `tags`, `status`.
 
