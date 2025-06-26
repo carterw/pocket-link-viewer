@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Pocket Link Browser</title>
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+  <style>
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+      width: 100vw;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 2em 1vw 2em 1vw;
+      width: 100vw;
+      max-width: 100vw;
+      box-sizing: border-box;
+    }
+    .table-container {
+      width: 100vw;
+      max-width: 100vw;
+      overflow-x: auto;
+    }
+    table {
+      border-collapse: collapse;
+      width: 100%;
+      table-layout: auto;
+      min-width: 800px;
+    }
+    th, td {
+      border: 1px solid #ccc;
+      padding: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    th.added, td.added,
+    th.status, td.status,
+    th.delete, td.delete {
+      max-width: none;
+      width: 1%;
+      white-space: nowrap;
+      text-overflow: initial;
+      overflow: visible;
+    }
+    th.title, td.title {
+      max-width: 600px;
+      min-width: 200px;
+      text-overflow: initial;
+      overflow: visible;
+      white-space: normal;
+      word-break: break-word;
+    }
+    th { background: #eee; }
+    a { color: #0074d9; text-overflow: initial; overflow: visible; white-space: normal; display: inline; max-width: 100%; vertical-align: bottom; word-break: break-word; }
+    button { background: #e74c3c; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+    button:hover { background: #c0392b; }
+    .highlighted-row {
+      background-color: #ffe066 !important;
+      transition: background 0.3s;
+    }
+    .header-flex {
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      margin-bottom: 16px;
+    }
+    .header-flex button {
+      margin-left: 16px;
+    }
+    @media (max-width: 900px) {
+      th, td, a {
+        max-width: 100px;
+      }
+      table {
+        min-width: 400px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="header-flex">
+    <h1 style="margin: 0;">Pocket Links</h1><button id="sort-date-btn">Sort by Date &#8595;</button>
+  </div>
+  <div class="table-container">
+    <table id="links-table">
+      <thead>
+        <tr>
+          <th class="added">Added</th>
+          <th class="status">Status</th>
+          <th class="delete">Delete</th>
+          <th class="title">Title</th>
+        </tr>
+      </thead>
+      <tbody>
+        <!-- Links will be rendered here by JS -->
+      </tbody>
+    </table>
+  </div>
+
+  <script>
+    let allLinks = [];
+    let sortDescending = true;
+
+    function renderLinks(links) {
+      const tbody = document.querySelector('#links-table tbody');
+      tbody.innerHTML = '';
+      links.forEach((link, idx) => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = `
+          <td class="added">${new Date(Number(link.time_added) * 1000).toLocaleString()}</td>
+          <td class="status">${link.status}</td>
+          <td class="delete"><button onclick="deleteLink(${idx})">Delete</button></td>
+          <td class="title"><a href="${link.url}" target="_blank" rel="noopener noreferrer">${link.title || '(no title)'}</a></td>
+        `;
+        const linkElem = tr.querySelector('a');
+        linkElem.addEventListener('click', function(e) {
+          tbody.querySelectorAll('tr').forEach(row => row.classList.remove('highlighted-row'));
+          tr.classList.add('highlighted-row');
+        });
+        tbody.appendChild(tr);
+      });
+    }
+
+    function sortLinksByDate() {
+      // Clone and sort
+      const sorted = [...allLinks].sort((a, b) => {
+        const ta = Number(a.time_added);
+        const tb = Number(b.time_added);
+        return sortDescending ? tb - ta : ta - tb;
+      });
+      renderLinks(sorted);
+    }
+
+    function fetchLinks() {
+      fetch('/api/links')
+        .then(res => res.json())
+        .then(links => {
+          allLinks = links;
+          sortLinksByDate();
+        });
+    }
+
+    function deleteLink(idx) {
+      fetch('/delete/' + idx, { method: 'POST' })
+        .then(res => {
+          if (res.ok) fetchLinks();
+        });
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const sortBtn = document.getElementById('sort-date-btn');
+      sortBtn.addEventListener('click', () => {
+        sortDescending = !sortDescending;
+        sortBtn.innerHTML = `Sort by Date ${sortDescending ? '&#8595;' : '&#8593;'}`;
+        sortLinksByDate();
+      });
+    });
+
+    fetchLinks();
+  </script>
+</body>
+</html>

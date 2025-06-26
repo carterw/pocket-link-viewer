@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Link Detail</title>
+  <style>
+    body { font-family: Arial, sans-serif; margin: 2em; }
+    a { color: #0074d9; }
+  </style>
+</head>
+<body>
+  <div id="detail"></div>
+  <p><a href="index.html">&larr; Back to all links</a></p>
+  <script>
+    function getIdFromQuery() {
+      const params = new URLSearchParams(window.location.search);
+      return params.get('id');
+    }
+    function renderDetail(link) {
+      if (!link) {
+        document.getElementById('detail').innerHTML = '<p>Link not found.</p>';
+        return;
+      }
+      document.getElementById('detail').innerHTML = `
+        <h1>${link.title || '(no title)'}</h1>
+        <p><strong>URL:</strong> <a href="${link.url}" target="_blank">${link.url}</a></p>
+        <p><strong>Added:</strong> ${new Date(Number(link.time_added) * 1000).toLocaleString()}</p>
+        <p><strong>Tags:</strong> ${link.tags || '(none)'}</p>
+        <p><strong>Status:</strong> ${link.status}</p>
+      `;
+    }
+    const id = getIdFromQuery();
+    fetch('/api/links')
+      .then(res => res.json())
+      .then(links => renderDetail(links[id]));
+  </script>
+</body>
+</html>
